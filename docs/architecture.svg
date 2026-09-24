@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="520" viewBox="0 0 820 520" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1a73e8"/>
+    </marker>
+  </defs>
+
+  <rect x="10" y="10" width="240" height="120" rx="10" fill="#fff7e6" stroke="#e6a700" stroke-width="2"/>
+  <text x="130" y="42" text-anchor="middle" font-size="15" font-weight="bold" fill="#7a5b00">TU PC (cliente)</text>
+  <text x="130" y="66" text-anchor="middle" font-size="12" fill="#555">Moonlight + WireGuard client</text>
+  <text x="130" y="86" text-anchor="middle" font-size="11" fill="#777">IP dinamica / LAN</text>
+  <text x="130" y="106" text-anchor="middle" font-size="11" fill="#777">gamepad: ViGEmBus virtual</text>
+
+  <line x1="250" y1="70" x2="350" y2="70" stroke="#1a73e8" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="300" y="55" text-anchor="middle" font-size="11" fill="#1a73e8">WireGuard</text>
+  <text x="300" y="95" text-anchor="middle" font-size="11" fill="#1a73e8">UDP 51820 (cifrado)</text>
+
+  <rect x="360" y="10" width="200" height="120" rx="10" fill="#e8f0fe" stroke="#1a73e8" stroke-width="2"/>
+  <text x="460" y="42" text-anchor="middle" font-size="15" font-weight="bold" fill="#174ea6">t3.micro VPN</text>
+  <text x="460" y="66" text-anchor="middle" font-size="12" fill="#333">WireGuard hub + NAT</text>
+  <text x="460" y="88" text-anchor="middle" font-size="11" fill="#666">EIP fija · SSM (sin SSH)</text>
+  <text x="460" y="106" text-anchor="middle" font-size="11" fill="#666">10.66.66.1</text>
+
+  <line x1="560" y1="70" x2="640" y2="70" stroke="#188038" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="600" y="55" text-anchor="middle" font-size="11" fill="#188038">RDP / Moonlight</text>
+  <text x="600" y="95" text-anchor="middle" font-size="11" fill="#188038">solo via SG del VPN</text>
+
+  <rect x="650" y="10" width="160" height="120" rx="10" fill="#e6f4ea" stroke="#188038" stroke-width="2"/>
+  <text x="730" y="42" text-anchor="middle" font-size="15" font-weight="bold" fill="#0d652d">g6.xlarge</text>
+  <text x="730" y="62" text-anchor="middle" font-size="12" fill="#333">Windows 10 · NVIDIA L4</text>
+  <text x="730" y="84" text-anchor="middle" font-size="11" fill="#666">GPU L4 · NVENC · EIP</text>
+  <text x="730" y="104" text-anchor="middle" font-size="11" fill="#666">Sunshine + VDD</text>
+
+  <rect x="10" y="170" width="800" height="140" rx="10" fill="#f8f9fa" stroke="#ccc" stroke-width="2"/>
+  <text x="410" y="196" text-anchor="middle" font-size="14" font-weight="bold" fill="#333">AWS — BascoVpc (10.0.0.0/16)</text>
+  <text x="410" y="215" text-anchor="middle" font-size="11" fill="#777">Subred publica 10.0.1.0/24 · Internet Gateway · NACL + SG + KMS + Flow Logs</text>
+
+  <rect x="60" y="235" width="700" height="60" rx="8" fill="#fff" stroke="#bbb"/>
+  <text x="410" y="262" text-anchor="middle" font-size="13" font-weight="bold" fill="#333">EBS cifrado (KMS)</text>
+  <text x="410" y="283" text-anchor="middle" font-size="12" fill="#555">65 GB root (gaming) · 300 GB juegos (solo-descarga) · 8 GB VPN</text>
+
+  <rect x="10" y="340" width="240" height="150" rx="10" fill="#fee" stroke="#d93025" stroke-width="2"/>
+  <text x="130" y="368" text-anchor="middle" font-size="14" font-weight="bold" fill="#a50e0e">Seguridad</text>
+  <text x="130" y="392" text-anchor="middle" font-size="11" fill="#555">• 1 solo puerto publico: 51820</text>
+  <text x="130" y="412" text-anchor="middle" font-size="11" fill="#555">• Sin SSH (SSM Session Manager)</text>
+  <text x="130" y="432" text-anchor="middle" font-size="11" fill="#555">• IMDSv2 obligatorio</text>
+  <text x="130" y="452" text-anchor="middle" font-size="11" fill="#555">• VPC Flow Logs → CloudWatch</text>
+  <text x="130" y="472" text-anchor="middle" font-size="11" fill="#555">• NACL deny-by-default</text>
+
+  <rect x="280" y="340" width="240" height="150" rx="10" fill="#eef" stroke="#5e35b1" stroke-width="2"/>
+  <text x="400" y="368" text-anchor="middle" font-size="14" font-weight="bold" fill="#3e1b8f">Streaming stack</text>
+  <text x="400" y="392" text-anchor="middle" font-size="11" fill="#555">• NVIDIA NVENC (nvenc)</text>
+  <text x="400" y="412" text-anchor="middle" font-size="11" fill="#555">• Virtual Display 1280x720@60</text>
+  <text x="400" y="432" text-anchor="middle" font-size="11" fill="#555">• Sunshine (servidor)</text>
+  <text x="400" y="452" text-anchor="middle" font-size="11" fill="#555">• Moonlight (cliente)</text>
+  <text x="400" y="472" text-anchor="middle" font-size="11" fill="#555">• ViGEmBus (gamepad)</text>
+
+  <rect x="550" y="340" width="260" height="150" rx="10" fill="#efe" stroke="#00897b" stroke-width="2"/>
+  <text x="680" y="368" text-anchor="middle" font-size="14" font-weight="bold" fill="#00564d">Costos</text>
+  <text x="680" y="392" text-anchor="middle" font-size="11" fill="#555">• g6.xlarge ~USD 0.80/h (encendido)</text>
+  <text x="680" y="412" text-anchor="middle" font-size="11" fill="#555">• EBS ~USD 29/mes (apagado, sigue)</text>
+  <text x="680" y="432" text-anchor="middle" font-size="11" fill="#555">• Sin NAT gateway (~USD 32/mes)</text>
+  <text x="680" y="452" text-anchor="middle" font-size="11" fill="#555">• Stop/start = ida a ~0</text>
+  <text x="680" y="472" text-anchor="middle" font-size="11" fill="#555">• Volumen juegos solo-descarga</text>
+</svg>

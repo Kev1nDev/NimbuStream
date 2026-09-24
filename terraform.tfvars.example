@@ -1,0 +1,36 @@
+# ---------------------------------------------------------------------------
+# Infraestructura existente (tu VPC)
+# ---------------------------------------------------------------------------
+vpc_id           = "vpc-XXXXXXXXXXXX"    # tu VPC, p.ej. 10.0.0.0/16
+public_subnet_id = "subnet-XXXXXXXXXXXX" # subred que sera publica
+gaming_ami_id    = "ami-XXXXXXXXXXXX"    # AMI Windows 10/11 importada (EC2Launch v2 + ENA)
+
+# ---------------------------------------------------------------------------
+# Acceso SSH
+# ---------------------------------------------------------------------------
+ssh_public_key_path  = "/home/USER/.ssh/id_ed25519.pub"
+ssh_private_key_path = "/home/USER/.ssh/id_ed25519"
+
+# Windows requiere RSA (no ED25519)
+windows_key_public_path  = "/home/USER/.ssh/id_rsa_aws.pub"
+windows_key_private_path = "/home/USER/.ssh/id_rsa_aws"
+
+# Limite de SUBIDA en Windows: 20 Mbps via NetQosPolicy
+gaming_outbound_throttle_bps = 20000000
+
+# ---------------------------------------------------------------------------
+# WireGuard: genera tu PAR de claves LOCALMENTE y pegalas aqui
+#   (ej: wg genkey / wg pubkey)
+# ---------------------------------------------------------------------------
+wg_server_private_key = "REEMPLAZA_CON_LA_CLAVE_PRIVADA_DEL_SERVIDOR"
+wg_server_public_key  = "REEMPLAZA_CON_LA_CLAVE_PUBLICA_DEL_SERVIDOR"
+wg_client_private_key = "REEMPLAZA_CON_LA_CLAVE_PRIVADA_DEL_CLIENTE"
+wg_client_public_key  = "REEMPLAZA_CON_LA_CLAVE_PUBLICA_DEL_CLIENTE"
+
+# ---------------------------------------------------------------------------
+# Instancias
+# ---------------------------------------------------------------------------
+gaming_instance_type     = "g6.xlarge" # g4dn.xlarge (T4) o g5.xlarge (A10G) tambien
+vpn_instance_type        = "t3.micro"
+games_volume_size        = 300 # volumen descargable donde se instalan juegos
+games_volume_snapshot_id = ""  # vacio = se crea desde cero

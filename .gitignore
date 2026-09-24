@@ -1,0 +1,33 @@
+# Terraform state — contains ALL resource IDs and secrets. Never commit.
+*.tfstate
+*.tfstate.backup
+*.tfstate.*
+.tfstate.lock.info
+
+# Local variable files — real credentials / real resource IDs
+terraform.tfvars
+terraform.tfvars.*
+!terraform.tfvars.example
+
+# WireGuard secrets / generated client config (contains private keys)
+wg_keys*
+wg_client.conf
+*.key
+*.pem
+*.ppk
+id_rsa*
+id_ed25519*
+
+# Sensitive notes / reports
+INFORME_*.txt
+*.log
+
+# Terraform internals
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+
+# Operating system junk
+.DS_Store
+Thumbs.db
