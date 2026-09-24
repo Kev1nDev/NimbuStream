@@ -14,6 +14,12 @@ can be stopped/restarted to keep costs near zero when unused.
 
 ## Highlights
 
+- **Custom multi-AZ VPC**: fully self-built network (10.0.0.0/16) with 3
+  subnets across 2 availability zones, Internet Gateway, public route tables,
+  and least-privilege security groups isolating the gaming tier from the
+  WireGuard VPN tier.
+- **On-device LLM stack**: **Ollama** serving **Llama** models on the GPU
+  instance, reachable only through the VPN for private inference.
 - **GPU in the cloud, two tiers**:
   - `g6.xlarge` (NVIDIA **L4**, 24 GB) — flagship, sustained FPS on modern
     titles at 720p@60.
