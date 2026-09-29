@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.png" alt="NimbusStream" width="450">
+  <img src="docs/logo.png" alt="NimbusStream" width="360">
 </p>
 
 <h1 align="center">NimbusStream</h1>
