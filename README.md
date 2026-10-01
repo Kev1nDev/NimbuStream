@@ -5,174 +5,162 @@
 <h1 align="center">NimbusStream</h1>
 
 <p align="center">
-  <strong>Headless GPU Cloud-Gaming Infrastructure on AWS</strong><br>
-  Turn any device into a gaming PC. Stream from a cloud NVIDIA GPU with a fully encrypted WireGuard tunnel — and zero exposed attack surface.
+  <strong>Deployment automatizado de estaciones de trabajo Windows con GPU acelerada por hardware, pensado para workloads exigentes</strong><br>
+  VDI headless · streaming de video en tiempo real de baja latencia · inferencia LLM local · red de acceso cifrada de superficie mínima.
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT"></a>
-  <a href="https://www.terraform.io"><img src="https://img.shields.io/badge/terraform-%3E%3D1.5-844FBA.svg" alt="Terraform"></a>
-  <a href="https://aws.amazon.com/ec2/"><img src="https://img.shields.io/badge/aws-EC2-orange.svg" alt="AWS EC2"></a>
-  <a href="https://www.nvidia.com/"><img src="https://img.shields.io/badge/gpu-NVIDIA%20T4%2FL4-76B900.svg" alt="NVIDIA GPU"></a>
-  <a href="https://github.com/Kev1nDev/NimbuStream"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
+  <a href="#"><img src="https://img.shields.io/badge/iaac-terraform-844FBA.svg" alt="IaC: Terraform"></a>
+  <a href="#"><img src="https://img.shields.io/badge/cloud-AWS%20EC2%20%26%20VPC-orange.svg" alt="Cloud: AWS"></a>
+  <a href="#"><img src="https://img.shields.io/badge/gpu-NVIDIA%20T4%2FL4-76B900.svg" alt="NVIDIA GPU"></a>
 </p>
 
 ---
 
-NimbusStream is an end-to-end infrastructure for cloud game streaming: a
-Windows gaming VM backed by an NVIDIA GPU in AWS, rendering **headlessly** on a
-virtual display and streamed to any computer at **720p/60 FPS** through a fully
-encrypted **WireGuard** tunnel.
+NimbusStream provisiona una **workstation Windows con aceleración por GPU** en AWS
+(estación de trabajo virtual / VDI), renderizada de forma **headless** y transmitida
+en tiempo real a cualquier dispositivo de la LAN a través de un túnel cifrado.
+Es la misma base tecnológica que usan verticales como **modelado 3D, CAD/render,
+edición de video profesional y tareas asistidas por IA** — el caso de uso de esta
+implementación es una consola de juegos, pero la ingeniería es de **infraestructura
+de cómputo remoto de alto rendimiento**.
 
-The project is a **personal cloud-gaming infrastructure exercise** — GPU-in-the-cloud
-vending happens under the hood, but the exposed surface is a single WireGuard port:
-**no RDP/SSH exposed to the internet**, and instances can be stopped to keep costs
-near zero when unused.
-
-## Table of Contents
-
-- [Highlights](#highlights)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [Cost Breakdown](#cost-breakdown)
-- [Security Model](#security-model)
-- [Repository Layout](#repository-layout)
-- [Roadmap](#roadmap)
-- [License](#license)
+La arquitectura mantiene un principio de seguridad estricto: **exactamente un
+puerto publico de entrada** (WireGuard UDP 51820). No hay RDP/SSH expuestos a
+internet y el nodo de cómputo puede detenerse por completo cuando no se usa,
+dejando el costo en idle cerca de cero.
 
 ## Highlights
 
-- **Multi-AZ custom VPC** — self-built network (`10.0.0.0/16`) with 3 subnets
-  across 2 availability zones, Internet Gateway, public route tables, and
-  least-privilege security groups isolating the gaming tier from the VPN tier.
-- **GPU in the cloud, two tiers** — swap a single variable to move between:
-  `g6.xlarge` (NVIDIA **L4**, 24 GB, flagship) and `g4dn.xlarge` (NVIDIA **T4**,
-  16 GB, budget). Same tooling, no rework.
-- **Headless rendering** — a Virtual Display Driver (IDD) simulates a 1280x720
-  monitor. No physical display, no phantom-monitor FPS tax.
-- **Low-latency streaming** — **Moonlight → Sunshine** over a LAN-optimized,
-  tunable bitrate.
-- **On-device LLM stack** — **Ollama** serving Llama models on the GPU instance,
-  reachable only through the VPN for private inference.
-- **Encrypted transport** — **WireGuard** (Curve25519) on a `t3.micro` hub;
-  keys are generated locally and never transmitted.
-- **Hardened by default** — IMDSv2 required, EBS encrypted with a customer KMS
-  key, VPC Flow Logs to CloudWatch, restrictive NACL, RDP allowed only from the
-  VPN security group, administration via SSM Session Manager (no SSH).
-- **Gamepad support** — **ViGEmBus** virtual controller so clients play with any
-  gamepad, no server-side hardware required.
-- **Zero-cost idle** — stop instances when not playing; EIPs stay free while
-  associated.
+- **Cómputo headless con aceleración por hardware** — Virtual Display Driver (IDD)
+  simula un monitor virtual sin penalizacion por monitores fantasma; el encode lo hace
+  el **NVENC** de la GPU (H.264/HEVC), no la CPU.
+- **Estructura de red de confianza cero (single hardened ingress)** — VPC custom con
+  subnet pública: la VPN WireGuard (`t3.micro`) es el único punto de entrada; el nodo
+  GPU acepta tráfico solo desde el security group de la VPN. **Sin NAT gateway**
+  (~USD 32/mes ahorrados), el routing de salida usa iptables del edge.
+- **Tiering de GPU por variable** — cambiar una variable alterna entre
+  `g4dn.xlarge` (NVIDIA **T4**, presupuesto) y `g6.xlarge` (NVIDIA **L4**, flagship),
+  sin refactorizar el código.
+- **IA local privada (Private Edge AI)** — **Ollama** hostea modelos open-source
+  (Llama) en la VRAM de la GPU; la API de inferencia se sirve solo a través del túnel.
+- **Streaming en tiempo real de baja latencia** — protocolo Sunshine/Moonlight
+  sobre el túnel, bitrate ajustable; latencia típica de uso LAN:
+  <60 ms medidos en operación normal.
+- **Endurecimiento enterprise** — IMDSv2 obligatorio (hop limit 1), EBS cifrada con
+  KMS customer-managed (rotación activa), NACL deny-by-default, VPC Flow Logs a
+  CloudWatch (30 días) y operación 100% vía **SSM Session Manager** (cero SSH).
+- **FinOps / Idle economy** — instancias se apagan por demanda; Elastic IPs se
+  mantienen gratuitas asociadas; volumen de datos descargable y snapshot-able.
+- **Gamepad virtual (opcional)** — ViGEmBus para entrada con mandos sin hardware dedicado.
 
-## Architecture
+## Arquitectura
 
 ![Architecture diagram](docs/architecture.svg)
 
-| Tier | Component | Role |
+| Tier | Componente | Rol |
 |---|---|---|
-| Client | Moonlight (PC/Android/TV) | Decodes and renders the game stream |
-| Edge | `t3.micro` WireGuard hub | Single encrypted entry point to the gaming tier |
-| Gaming | `g6.xlarge` / `g4dn.xlarge` (Windows) | Headless GPU rendering + NVENC encode |
-| Storage | EBS (gp3) 65 GB root + 300 GB games | OS + disposable games volume |
-| Ops | SSM Session Manager, CloudWatch, KMS | No-open-port administration & auditing |
+| **Cliente** | Moonlight (PC / Android / TV) | Decodificación por hardware + render del stream |
+| **Edge** | `t3.micro` WireGuard hub | Único túnel cifrado de entrada a la red |
+| **Cómputo** | `g6.xlarge` / `g4dn.xlarge` (Windows) | Workstation GPU headless + encode NVENC |
+| **Almacenamiento** | EBS gp3 cifrada (65 GB OS + volumen de datos) | SO + volumen de workloads/datos |
+| **Ops** | SSM Session Manager · CloudWatch · KMS | Administración sin puertos, auditoría y cifrado |
+
+El nodo GPU vive en la **subnet pública** junto al edge, pero su exposición real
+es nula hacia internet: sus security groups solo aceptan RDP y streaming desde el
+SG de la VPN. Todo el tráfico de entrada pasa por WireGuard.
 
 ## Getting Started
 
-> Full step-by-step guide (VDD driver, Sunshine, ViGEmBus, first stream) is in
+> Guía paso a paso completa (VDD, Sunshine, ViGEmBus, first stream):
 > [docs/SETUP.md](docs/SETUP.md).
 
-**Prerequisites**
-
-- Terraform (>= 1.5) — OpenTofu-compatible providers.
-- An AWS account with a VPC and one public subnet.
-- A Windows 10/11 AMI (this repo was built against an imported AMI).
-- WireGuard on your client machine.
+**Requisitos**
+- Terraform (>= 1.5) u OpenTofu (el repo usa el mirror de registro de OpenTofu).
+- AWS CLI autenticado con permisos para EC2/IAM/VPC.
+- VPC existente con una subnet pública (el repo consume la infra existente).
+- AMI Windows 10/11 importada (con **EC2Launch v2 + ENA**); claves RSA (Windows no
+  soporta ED25519).
+- WireGuard en la máquina cliente.
 
 **Deploy**
 
 ```sh
-# 1. Fill in your values (VPC, subnet, AMI, WireGuard keys, SSH keys)
-cp terraform.tfvars.example terraform.tfvars
+cp terraform.tfvars.example terraform.tfvars   # VPC, subnet, AMI, rutas de claves, claves WG
 $EDITOR terraform.tfvars
-
-# 2. Plan & apply
 terraform init
 terraform plan
 terraform apply
 
-# 3. Import the generated wg-client.conf into WireGuard on your PC,
-#    then connect Moonlight to the gaming private IP.
+# Password de administrador de Windows (usa tu clave RSA local)
+aws ec2 get-password-data --instance-id <gaming_id> --priv-launch-key <clave_rsa>
+
+# Config cliente generada al apply: importar wg-client.conf en WireGuard
 ```
 
-> ⚠️ Never commit `terraform.tfvars`, `*.tfstate`, or WireGuard keys — the
-> repository `.gitignore` is configured to keep them out.
+> ⚠️ Nunca commitear `terraform.tfvars`, `*.tfstate` ni claves WireGuard — el
+> `.gitignore` está configurado para mantenerlos fuera.
 
-## Cost Breakdown
+## FinOps / Topología de costos
 
-The cost structure has two states that matter more than the hourly rate:
-**running** and **stopped (idle)**.
+Dos estados importan más que el precio por hora: **en uso** y **apagado (idle)**.
 
-| State | Component | Cost |
+| Estado | Componente | Costo |
 |---|---|---|
-| **Running** | `g6.xlarge` GPU (Windows) | ~USD 0.80/h |
-|   | `g4dn.xlarge` GPU (Windows) | ~USD 0.53/h |
-|   | `t3.micro` VPN (Linux) | ~USD 0.0104/h |
-|   | EIPs (associated) | USD 0 |
-| **Stopped** | EBS 65 GB root + 300 GB games + 8 GB VPN | ~USD 29/mo |
-|   | AMI + snapshot (65 GB) | ~USD 3.25–6.50/mo |
+| **En uso** | `g6.xlarge` (L4, Windows) | ~USD 0.80/h |
+|   | `g4dn.xlarge` (T4, Windows) | ~USD 0.53/h |
+|   | `t3.micro` VPN (Linux) | ~USD 0.01/h |
+|   | Elastic IPs (asociadas) | USD 0 |
+| **Apagado** | EBS cifrada (65+300+8 GB) | ~USD 29/mo |
+|   | AMI + snapshot | ~USD 3.25-6.50/mo |
 
-**Savings levers used in this project:** stop-don't-terminate, import-don't-reinstall
-(AMI from a VirtualBox VMDK), no NAT gateway (~USD 32/mo saved), a *download-only*
-games volume (never uploads → data-transfer cost ≈ 0), and snapshot+delete for
-multi-week breaks. Full analysis: [docs/COSTS.md](docs/COSTS.md).
+**Palancas FinOps aplicadas:** sin NAT gateway (~USD 32/mo), stop-don't-terminate,
+AMI importada (sin reinstalar SO), volumen de datos *solo-descarga* (costo de
+subida ≈ 0), y ciclo snapshot-and-destroy para inactividad larga. Detalle completo:
+[docs/COSTS.md](docs/COSTS.md).
 
 ## Security Model
 
-The system exposes **exactly one inbound port** to the internet.
+La superficie de internet se reduce a **un solo puerto UDP**.
 
-| Surface | Exposure |
+| Superficie | Política |
 |---|---|
-| WireGuard VPN (UDP 51820) | Public, `0.0.0.0/0` (client auth by key) |
-| RDP (3389) | Only from the VPN security group |
-| Moonlight (47984-48010) | Only from the VPN security group |
-| SSH (22) | None — admin via SSM Session Manager |
+| WireGuard (UDP 51820) | Público; solo autentica con claves Curve25519 |
+| RDP (3389) | Solo desde el security group de la VPN |
+| Streaming (47984-48010 / 47998-48010) | Solo desde el security group de la VPN |
+| SSH / WinRM | Deshabilitados; administración por SSM Session Manager |
 | EC2 IMDS | v2-only, hop limit 1 |
-| EBS | Encrypted at rest with KMS |
+| EBS | Cifrada en reposo con KMS (customer-managed) |
 
-A full threat-model table lives in [docs/SETUP.md](docs/SETUP.md).
+Threat model completo: [docs/SETUP.md](docs/SETUP.md).
 
 ## Repository Layout
 
 ```
 .
-├── main.tf                  # EC2, VPN, security, networking
-├── variables.tf             # all tunables; secrets flagged "sensitive"
-├── outputs.tf               # connection strings, command helpers
-├── terraform.tfvars.example # copy to terraform.tfvars and fill in
-├── .github/workflows/       # CI (see Roadmap)
+├── main.tf                  # EC2, VPN, red, seguridad (EWG)
+├── variables.tf             # todos los tunables (secretos marcados sensitive)
+├── outputs.tf               # strings de conexión y helpers
+├── terraform.tfvars.example # copiar a terraform.tfvars y llenar
 └── docs/
-    ├── SETUP.md             # step-by-step from scratch to first stream
-    ├── COSTS.md             # on-demand pricing breakdown & savings tactics
-    └── CV.md                # résumé-ready project summary (EN/ES)
+    ├── SETUP.md             # de cero al primer stream
+    ├── COSTS.md             # breakdown de precios y palancas de ahorro
+    └── CV.md                # resumen listo para CV (EN/ES)
 ```
 
 ## Roadmap
 
-- [ ] CI pipeline (terraform fmt/validate/plan on pull requests).
-- [ ] Browser WebRTC player — *click & play* without installing Moonlight.
-- [ ] Multi-session GPU sharing (one GPU, multiple concurrent streams).
-- [ ] Spot-instance fallback for cheaper running hours.
+- [ ] CI/CD: `terraform fmt` + `tflint` + plan en pull requests (GitHub Actions).
+- [ ] Gateway WebRTC en navegador: portal seguro para streamear sin instalar cliente.
+- [ ] Particionado multi-tenant de la GPU (vGPU) para múltiples sesiones concurrentes.
+- [ ] Fallback a Spot instances para bajar el costo por hora de running.
 
 ## License
 
-Licensed under the [MIT License](LICENSE).
-
----
-
-**Acknowledgements** — built on the shoulders of great open-source:
-[Sunshine](https://github.com/LizardByte/Sunshine),
+[MIT](LICENSE). Agradecimientos a [Sunshine](https://github.com/LizardByte/Sunshine),
 [Moonlight](https://github.com/moonlight-stream), [WireGuard](https://www.wireguard.com/),
-[HashiCorp Terraform](https://www.terraform.io/), and NVIDIA Cloud Gaming drivers.
+[Terraform/OpenTofu](https://opentofu.org/) y la comunidad de drivers NVIDIA.
 
-> This is a personal learning/homelab project 🚧. It is not production-grade.
-> Use at your own risk and never commit real secrets — see `.gitignore`.
+> Proyecto personal de aprendizaje/laboratorio (no es production-grade industrial).
+> Úsalo bajo tu propio riesgo y nunca comitees secretos reales — ver `.gitignore`.
