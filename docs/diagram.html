@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NimbusStream — Arquitectura</title>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0F1520;color:#DCE4EE;font-family:"Segoe UI",system-ui,sans-serif}
+#err{display:none;padding:40px;color:#F87171;font-size:16px}
+.wrap{display:flex;flex-direction:column;height:100vh}
+.title{text-align:center;font-size:22px;font-weight:700;color:#27A2DF;padding:18px 0 0}
+.title span{display:block;font-size:12px;font-weight:400;color:#8CA2BB;margin-top:4px}
+.svgbox{flex:1;position:relative;min-height:0;padding:8px}
+svg{width:100%;height:100%;display:block}
+.box{stroke-width:1.5px}
+.box.t{stroke-dasharray:6 4;animation:pulse 3s linear infinite}
+@keyframes pulse{to{stroke-dashoffset:-40}}
+.tunnelline{stroke-dasharray:10 6;animation:dashflow 2.4s linear infinite}
+@keyframes dashflow{to{stroke-dashoffset:-64}}
+.det{height:118px;background:#0A0E14;border-top:1px solid #223046;padding:12px 18px;font-size:13px}
+.det b{color:#27A2DF;text-transform:uppercase;font-size:11px;letter-spacing:1px}
+.det p{margin:6px 0 0;color:#AFC6DC;line-height:1.45}
+.leg{margin:10px 20px;padding:8px 14px;border:1px dashed #3B4A57;border-radius:8px;color:#8CA2BB;font-size:12px}
+.cbtn{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:#161E2E;border:1px solid #223046;color:#DCE4EE;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px}
+.cbtn:hover{background:#1C2A3E}
+</style>
+</head>
+<body>
+<p id="err">CDN no disponible (React no cargó). Intenta recargar o abre este mismo archivo con conexión.</p>
+<button class="cbtn" id="toggle">Mostrar etiquetas</button>
+<div class="wrap">
+  <div class="title">NimbusStream — Arquitectura<span>AWS · estación de trabajo GPU en la nube</span></div>
+  <div class="svgbox"><div id="root"></div></div>
+  <div class="det" id="det"></div>
+</div>
+<script>
+(function(){
+  if(!window.React || !window.ReactDOM){
+    document.getElementById('err').style.display='block';
+    return;
+  }
+  var h=React.createElement, root=ReactDOM.createRoot(document.getElementById('root'));
+  var W=1280,H=640;
+  var DATA={
+    region:{x:26,y:64,w:640,h:470,fill:'#161E2E',stroke:'#3B4A57',dash:true,t:'AWS · us-east-2',
+      d:'Región AWS us-east-2. Virtual Private Cloud privada por defecto.'},
+    gpu:{x:44,y:130,w:280,h:200,fill:'#0F2A43',stroke:'#27A2DF',
+      t:'GPU Workstation — g4dn.2xlarge',sub:'Windows Server 2019 · Tesla T4 (NVENC) · Sunshine + Moonlight · Ollama llama3.2 local',
+      d:'g4dn.2xlarge (8 vCPU, 32 GB, 1× T4). Cuenta con 350 GB en D:. Ollama llama3.2:1b corre local en la GPU (~1.2 GB).'},
+    ebs:{x:370,y:130,w:260,h:56,fill:'#1C3A54',stroke:'#5AA0D0',
+      t:'EBS gp3 · 350 GB',sub:'D: datos y proyectos',
+      d:'EBS gp3 · 350 GB montado como disco de datos (D:). Almacenamiento persistente cifrado con KMS CMK.'},
+    ssm:{x:370,y:204,w:260,h:56,fill:'#22303F',stroke:'#F0A202',
+      t:'SSM (AWS) · admin sin SSH',sub:'CloudWatch + VPC Flow Logs',
+      d:'Administración 100% por Session Manager. Sin puerto SSH. IMDSv2 obligatorio; KMS customer-managed.'},
+    vpn:{x:370,y:278,w:260,h:92,fill:'#123B2E',stroke:'#25D07E',
+      t:'WireGuard pivot — t3.micro',sub:'Ubuntu 24.04 · UDP/51820 · único puerto público',
+      d:'El único inbound público es WireGuard 51820. RDP y Moonlight solo desde dentro del túnel. ~$0.01/h encendida.'},
+    sec:{x:44,y:440,w:586,h:62,fill:'#16202B',stroke:'#E0A62C',dash:true,
+      t:'Defaults de seguridad',sub:'KMS CMK · IMDSv2 · NACL deny-by-default · un solo SG',
+      d:'Sin NAT gateway (ahorro ~$32/mes). Los SG no exponen RDP (3389) ni streaming (47984-48010) salvo hacia el túnel.'},
+    tunnel:{x:730,y:230,w:170,h:140,fill:'#10313A',stroke:'#3FB6D8',dash:true,ellipse:true,
+      t:'Túnel WireGuard',sub:'cifrado · unicast VPN · par id_ed25519',
+      d:'Tubería cifrada entre el pivot y tu equipo. Lo que pasa por el túnel no sale a Internet abierto.'},
+    client:{x:980,y:150,w:240,h:120,fill:'#4A2F63',stroke:'#B08FD0',
+      t:'Endpoint — Moonlight / web player',sub:'cualquier dispositivo conectado',
+      d:'Cliente ligero: recibe el frame codificado por NVENC y manda input. Latencia LAN ~1-3 ms, WAN variable según red.'},
+    priv:{x:980,y:310,w:240,h:110,fill:'#3D2C3F',stroke:'#D0B0F0',dash:true,
+      t:'Datos privados',sub:'la sesión no sale del túnel',
+      d:'Cifrado de extremo a extremo; inferencia IA local (Ollama) y workloads no suben datos a terceros.'}
+  };
+  function text(x,y,str,cls,size,anchor){
+    return h('text',{x:x,y:y,className:cls||'',fontSize:size||12,textAnchor:anchor||'start',fill:cls==='t'?'#E8EEF5':'#9FB3C8'},str);
+  }
+  function box(key,showLabels){
+    var b=DATA[key];
+    var el=[];
+    if(!b.ellipse){
+      el.push(h('rect',{x:b.x,y:b.y,width:b.w,height:b.h,rx:8,className:'box'+(b.dash?' t':''),fill:b.fill,stroke:b.stroke,opacity:0.98,onClick:function(){showDetail(key)}}));
+    } else {
+      el.push(h('ellipse',{cx:b.x+b.w/2,cy:b.y+b.h/2,rx:b.w/2,ry:b.h/2,className:'box t',fill:b.fill,stroke:b.stroke,opacity:0.98,onClick:function(){showDetail(key)}}));
+    }
+    if(showLabels){
+      if(b.ellipse){
+        el.push(text(b.x+b.w/2,b.y+b.h/2-10,b.t,'t',12,'middle'));
+        el.push(text(b.x+b.w/2,b.y+b.h/2+12,b.sub,'',10,'middle'));
+      } else {
+        el.push(text(b.x+14,b.y+20,b.t,'t',13,'start'));
+        el.push(text(b.x+14,b.y+42,b.sub,'',11,'start'));
+      }
+    }
+    return el;
+  }
+  var lines=[
+    {d:'M 324 170 L 362 158',stroke:'#5AA0D0',w:1.5},
+    {d:'M 324 200 L 362 232',stroke:'#25D07E',w:1.5},
+    {d:'M 630 324 L 722 300',stroke:'#25D07E',w:1.5,dl:true},
+    {d:'M 900 300 L 972 210',stroke:'#3FB6D8',w:1.5,dl:true},
+    {d:'M 1100 270 L 1100 302',stroke:'#8E6FB3',w:1,dash:true}
+  ];
+  function build(showLabels){
+    var els=[];
+    for(var k in DATA){ els=els.concat(box(k,showLabels)); }
+    lines.forEach(function(l){
+      els.push(h('path',{d:l.d,fill:'none',stroke:l.stroke,strokeWidth:l.w,className:l.dl?'tunnelline':'',strokeDasharray:l.dash?'5 4':null,opacity:0.95}));
+    });
+    els.push(text(48,54,'AWS · us-east-2', 't',12,'start'));
+    els.push(text(726,180,'INTERNET PRIVADA (túnel)', 's',10,'middle'));
+    return h('svg',{viewBox:'0 0 '+W+' '+H},els);
+  }
+  var showLabelsFlag=true;
+  function showDetail(key){
+    var b=DATA[key];
+    var n=document.getElementById('det');
+    n.innerHTML='';
+    var bd=document.createElement('b'); bd.textContent=b.t; n.appendChild(bd);
+    var p=document.createElement('p'); p.textContent=b.sub+' — '+b.d; n.appendChild(p);
+    if(!showLabelsFlag){ showLabelsFlag=false; } 
+  }
+  document.getElementById('toggle').addEventListener('click',function(){
+    showLabelsFlag=!showLabelsFlag;
+    root.render(build(showLabelsFlag));
+  });
+  root.render(build(true));
+  showDetail('gpu');
+})();
+</script>
+</body>
+</html>

@@ -38,7 +38,7 @@ terraform apply            # ~5-8 minutes
 > providers to the **OpenTofu registry mirror**:
 > `registry.opentofu.org/hashicorp/aws` / `.../hashicorp/local`.
 
-After apply you get: VPN + gaming instances, two Elastic IPs, KMS key,
+After apply you get: VPN + compute instances, two Elastic IPs, KMS key,
 flow logs group, and a generated `wg-client.conf` for your PC.
 
 ## 3. Connect WireGuard on your PC
@@ -61,7 +61,7 @@ mstsc /v:<gaming_private_ip>
 
 Both values are printed by `terraform output`.
 
-## 5. Install the gaming stack (in the RDP session)
+## 5. Install the streaming stack (in the RDP session)
 
 ### 5.1 NVIDIA driver
 Install the NVIDIA Studio/Game Ready driver for the GPU. Verify:
@@ -106,7 +106,7 @@ A headless GPU has "phantom" generic monitors that steal FPS. The VDD
    csrf_allowed_origins = https://<gaming_private_ip>
    ```
 3. Forward only what your SG allows (see main.tf) — Moonlight connects via the
-   gaming private IP *over the VPN*.
+   compute private IP *over the VPN*.
 
 ### 5.4 ViGEmBus (virtual gamepad)
 The NSIS installer (`ViGEmBus_*_x64_x86_arm64.exe /S`) often **hangs in
@@ -121,7 +121,7 @@ session 0** (unattended). Options:
 
 ## 6. First stream
 
-1. On your PC: **Moonlight** → add host → gaming private IP (VPN active).
+1. On your PC: **Moonlight** → add host → compute private IP (VPN active).
 2. Resolve PIN → you should get a 720p@60 desktop with the gamepad working.
 3. Adjust bitrate in `sunshine.conf` if you see encoder-side network issues.
 

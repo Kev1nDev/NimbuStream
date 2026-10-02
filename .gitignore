@@ -31,3 +31,17 @@ crash.*.log
 # Operating system junk
 .DS_Store
 Thumbs.db
+
+# Python / build artifacts (nimbus_panel)
+build/
+dist/
+*.spec
+__pycache__/
+*.pyc
+
+# Local AI-agent guidance (kept out of the public repo)
+AGENTS.md
+
+# Node/web app (Vite + React)
+node_modules/
+web/dist/

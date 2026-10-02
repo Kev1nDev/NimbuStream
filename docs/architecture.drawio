@@ -1,0 +1,78 @@
+<mxfile host="app.diagrams.net" agent="opencode" version="24.0.0">
+  <diagram id="nimbus-arch" name="Cloud GPU Workstation">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="awsRegion" value="AWS · us-east-2" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fontStyle=1;fontColor=#FFFFFF;fillColor=#161E2E;strokeColor=#3B4A57;dashed=1;dashPattern=5 4;arcSize=6;fontSize=14;align=center;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="60" width="640" height="520" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gpuNode" value="GPU workstation&lt;br&gt;&lt;font color=&quot;#27A2DF&quot;&gt;g4dn.2xlarge · Windows Server 2019&lt;/font&gt;&lt;br&gt;&lt;br&gt;&#9724; NVIDIA Tesla T4 (NVENC)&lt;br&gt;&#9724; Sunshine + Moonlight streaming&lt;br&gt;&#9724; Ollama + llama3.2:1b (local)&lt;br&gt;&#9724; Juegos/Apps en D:" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F2A43;strokeColor=#27A2DF;fontColor=#E8EEF5;verticalAlign=top;align=left;spacingLeft=12;spacingTop=10;fontSize=12;arcSize=6;" vertex="1" parent="1">
+          <mxGeometry x="70" y="150" width="300" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ebs" value="&lt;b&gt;EBS gp3 — 350 GB&lt;/b&gt;&lt;br&gt;D: datos y proyectos&lt;br&gt;&lt;font color=&quot;#9fb3c8&quot;&gt;almacenamiento cifrado (KMS CMK)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1C3A54;strokeColor=#5AA0D0;fontColor=#E8EEF5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="420" y="150" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ssm" value="&lt;b&gt;SSM (AWS SSM)&lt;/b&gt;&lt;br&gt;admin sin SSH&lt;br&gt;CloudWatch + Flow Logs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#22303F;strokeColor=#F0A202;fontColor=#E8EEF5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="420" y="250" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="wgpivot" value="&lt;b&gt;WireGuard pivot&lt;/b&gt;&lt;br&gt;t3.micro · Ubuntu 24.04&lt;br&gt;UDP/51820 (único puerto público)&lt;br&gt;&lt;font color=&quot;#7FE3B4&quot;&gt;par id_ed25519&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#123B2E;strokeColor=#25D07E;fontColor=#E8EEF5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="420" y="350" width="200" height="95" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sec" value="&lt;b&gt;Defaults de seguridad&lt;/b&gt;&lt;br&gt;KMS CMK · IMDSv2 obligatorio · NACL deny-by-default · Un solo SG" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#16202B;strokeColor=#E0A62C;fontColor=#D9DEE4;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="70" y="470" width="550" height="62" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tunnel" value="&lt;b&gt;Túnel WireGuard&lt;/b&gt;&lt;br&gt;cifrado · baja latencia&lt;br&gt;(unicast VPN)" style="ellipse;html=1;fillColor=#10313A;strokeColor=#3FB6D8;dashed=1;fontColor=#DFF3FA;fontSize=11;perimeter=ellipsePerimeter;" vertex="1" parent="1">
+          <mxGeometry x="760" y="280" width="160" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="endpoint" value="&lt;b&gt;Endpoint&lt;/b&gt; (tu equipo)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;fontStyle=1;fontColor=#FFFFFF;fillColor=#3D2C3F;strokeColor=#8E6FB3;fontSize=12;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="120" width="220" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="client" value="&#128187; Moonlight / web player&lt;br&gt;cualquier dispositivo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4A2F63;strokeColor=#B08FD0;fontColor=#F3EBFA;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1275" y="190" width="170" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="privacy" value="&#128274; Datos privados&lt;br&gt;no viajan a Internet abierto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#3D2C3F;strokeColor=#D0B0F0;dashed=1;fontColor=#EADFF7;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1275" y="310" width="170" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#27A2DF;" edge="1" parent="1" source="ssm" target="gpuNode">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e2" value="lectura/escritura" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#5AA0D0;fontColor=#9fb3c8;fontSize=10;exitX=1;exitY=0.2;exitDx=0;exitDy=0;entryX=0;entryY=0.2;entryDx=0;entryDy=0;" edge="1" parent="1" source="gpuNode" target="ebs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e3" value="anti-túnel" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#25D07E;fontColor=#7FE3B4;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="gpuNode" target="wgpivot">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e4" value="UDP/51820" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#25D07E;fontColor=#7FE3B4;fontSize=11;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="wgpivot" target="tunnel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e5" value="túnel cifrado" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#3FB6D8;fontColor=#DFF3FA;fontSize=11;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="tunnel" target="client">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#8E6FB3;dashed=1;" edge="1" parent="1" source="privacy" target="client">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="title" value="Arquitectura: estación de trabajo GPU en la nube (AWS + WireGuard)" style="text;html=1;fontSize=16;fontStyle=1;fontColor=#FFFFFF;align=center;" vertex="1" parent="1">
+          <mxGeometry x="550" y="30" width="600" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

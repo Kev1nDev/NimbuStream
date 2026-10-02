@@ -5,9 +5,9 @@ most job markets) and Spanish.
 
 ---
 
-## EN — "Cloud Gaming Platform on AWS" (Personal project, 2026)
+## EN — "GPU-Accelerated Cloud VDI on AWS" (Personal project, 2026)
 
-**What it is.** A self-built cloud gaming platform: a Windows 10 machine with an
+**What it is.** A self-built GPU-accelerated virtual desktop (VDI): a Windows 10 machine with an
 NVIDIA L4 GPU (g6.xlarge) in AWS, rendering headlessly and streaming 720p/60 FPS
 to any PC on my LAN via Moonlight/Sunshine, encrypted end-to-end on WireGuard.
 
@@ -26,7 +26,7 @@ to any PC on my LAN via Moonlight/Sunshine, encrypted end-to-end on WireGuard.
   pnputil/nefcon, QoS bandwidth cap for upload, service bring-up), and made the
   whole bring-up reproducible.
 - Optimized cost: stop/start discipline, public subnet (no NAT gateway,
-  ~USD 32/month saved), "download-only" 300 GB games volume, and cleanup of
+  ~USD 32/month saved), "download-only" 300 GB data volume, and cleanup of
   orphaned EIPs/snapshots/AMIs (cut idle cost materially).
 
 **Skills demonstrated:** Terraform · AWS (EC2, VPC, IAM, KMS, SSM, EBS, NACL) ·
@@ -35,9 +35,9 @@ Cloud GPU (NVIDIA L4, NVENC) · Linux + WireGuard · Windows automation
 
 ---
 
-## ES — "Plataforma de Gaming en la Nube (proyecto personal, 2026)"
+## ES — "VDI acelerado con GPU en la Nube (proyecto personal, 2026)"
 
-**Qué es.** Una PC de gaming en la nube: una instancia Windows 10 con GPU
+**Qué es.** Un escritorio virtual (VDI) con GPU en la nube: una instancia Windows 10 con GPU
 NVIDIA L4 (g6.xlarge) en AWS que renderiza sin monitor físico y transmite a
 720p/60 FPS por Moonlight/Sunshine a cualquier PC de mi red, cifrada de punta a
 punta con WireGuard.
@@ -57,7 +57,7 @@ punta con WireGuard.
   pnputil/nefcon, cap de subida por QoS, arranque de servicios) y despliegue
   reproducible.
 - Optimización de costos: encendido/apagado programado, subred pública (sin
-  NAT gateway, ~USD 32/mes ahorrados), volumen de juegos 300 GB solo-descarga,
+  NAT gateway, ~USD 32/mes ahorrados), volumen de datos 300 GB solo-descarga,
   y limpieza de EIPs/snapshots/AMIs huérfanas.
 
 **Skills que demuestra:** Terraform · AWS (EC2, VPC, IAM, KMS, SSM, EBS, NACL) ·
