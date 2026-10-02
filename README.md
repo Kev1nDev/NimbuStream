@@ -22,9 +22,9 @@ NimbusStream provisiona una **workstation Windows con aceleración por GPU** en 
 (estación de trabajo virtual / VDI), renderizada de forma **headless** y transmitida
 en tiempo real a cualquier dispositivo de la LAN a través de un túnel cifrado.
 Es la misma base tecnológica que usan verticales como **modelado 3D, CAD/render,
-edición de video profesional y tareas asistidas por IA** — el caso de uso de esta
-implementación es una consola de juegos, pero la ingeniería es de **infraestructura
-de cómputo remoto de alto rendimiento**.
+edición de video profesional y tareas asistidas por IA** — un entorno de
+**renderizado interactivo en tiempo real** sobre infraestructura de cómputo
+remoto de alto rendimiento.
 
 La arquitectura mantiene un principio de seguridad estricto: **exactamente un
 puerto publico de entrada** (WireGuard UDP 51820). No hay RDP/SSH expuestos a
@@ -53,7 +53,6 @@ dejando el costo en idle cerca de cero.
   CloudWatch (30 días) y operación 100% vía **SSM Session Manager** (cero SSH).
 - **FinOps / Idle economy** — instancias se apagan por demanda; Elastic IPs se
   mantienen gratuitas asociadas; volumen de datos descargable y snapshot-able.
-- **Gamepad virtual (opcional)** — ViGEmBus para entrada con mandos sin hardware dedicado.
 
 ## Arquitectura
 

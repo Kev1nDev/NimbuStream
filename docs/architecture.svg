@@ -9,7 +9,6 @@
   <text x="130" y="42" text-anchor="middle" font-size="15" font-weight="bold" fill="#7a5b00">TU PC (cliente)</text>
   <text x="130" y="66" text-anchor="middle" font-size="12" fill="#555">Moonlight + WireGuard client</text>
   <text x="130" y="86" text-anchor="middle" font-size="11" fill="#777">IP dinamica / LAN</text>
-  <text x="130" y="106" text-anchor="middle" font-size="11" fill="#777">gamepad: ViGEmBus virtual</text>
 
   <line x1="250" y1="70" x2="350" y2="70" stroke="#1a73e8" stroke-width="3" marker-end="url(#arrow)"/>
   <text x="300" y="55" text-anchor="middle" font-size="11" fill="#1a73e8">WireGuard</text>
@@ -53,7 +52,6 @@
   <text x="400" y="412" text-anchor="middle" font-size="11" fill="#555">• Virtual Display 1280x720@60</text>
   <text x="400" y="432" text-anchor="middle" font-size="11" fill="#555">• Sunshine (servidor)</text>
   <text x="400" y="452" text-anchor="middle" font-size="11" fill="#555">• Moonlight (cliente)</text>
-  <text x="400" y="472" text-anchor="middle" font-size="11" fill="#555">• ViGEmBus (gamepad)</text>
 
   <rect x="550" y="340" width="260" height="150" rx="10" fill="#efe" stroke="#00897b" stroke-width="2"/>
   <text x="680" y="368" text-anchor="middle" font-size="14" font-weight="bold" fill="#00564d">Costos</text>
