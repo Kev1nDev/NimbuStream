@@ -57,7 +57,7 @@ dejando el costo en idle cerca de cero.
 
 ## Arquitectura
 
-![Architecture diagram](docs/architecture.svg)
+![Architecture diagram](docs/architecture.png)
 
 | Tier | Componente | Rol |
 |---|---|---|
